@@ -73,6 +73,7 @@ INSERT INTO TRANSACTION  VALUES ('0000000070' , '2022-10-25' , 'mobile' , 0, 583
 
 
 /*DNG_TXN TABLE*/
+SET DEFINE OFF; -- & 무시
 INSERT INTO DNG_TXN  VALUES ('0000000001' , 500, 'transfer too much money.' , '0');
 INSERT INTO DNG_TXN  VALUES ('0000000015' , 800, 'Suspicious person.' , '3');
 INSERT INTO DNG_TXN  VALUES ('0000000016' , 801, 'Suspicious person.' , '3');
