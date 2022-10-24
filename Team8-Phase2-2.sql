@@ -1,3 +1,5 @@
+SET DEFINE OFF;
+
 INSERT INTO BANK VALUES (0, 'JPMorgan Chase Bank Main Office', '1111 Polaris Parkway', 'Columbus', 'OH', 43240);
 INSERT INTO BANK VALUES (1, 'JPMorgan Chase Bank Mobile', NULL, NULL, NULL, NULL);
 INSERT INTO BANK VALUES (2, 'College Grove Branch', '3490 College Avenue', 'San Diego', 'CA', 92115);
