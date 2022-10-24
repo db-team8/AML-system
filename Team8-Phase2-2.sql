@@ -26,6 +26,7 @@ INSERT INTO BANK VALUES (22, 'Powell North Branch', '7451 Sawmill Pkwy', 'Powell
 INSERT INTO BANK VALUES (23, 'Brentwood Branch', '1800 Brentwood Road', 'Brentwood', 'NY', 11717);
 INSERT INTO BANK VALUES (24, 'Birdrock Banking Center', '5605 LA Jolla Blvd', 'LA Jolla', 'CA', 92037);
 INSERT INTO BANK VALUES (25, 'Lake Worth Road Branch', '6492 Lake Worth Road', 'Lake Worth', 'FL', 33463);
+Commit;
 
 Insert into HOLDER (H_ID,NAME,SEX,ADDRESS,NATIONALITY,PHONE_NUMBER) values (0,'Jainna','Female','4651 Trainer Avenue, Peoria, Illinois','USA','309-518-7596');
 Insert into HOLDER (H_ID,NAME,SEX,ADDRESS,NATIONALITY,PHONE_NUMBER) values (1,'Tyrion','Male','2191 Nash Street, Livonia, Michigan','USA','313-247-8612');
@@ -227,6 +228,7 @@ Insert into HOLDER (H_ID,NAME,SEX,ADDRESS,NATIONALITY,PHONE_NUMBER) values (196,
 Insert into HOLDER (H_ID,NAME,SEX,ADDRESS,NATIONALITY,PHONE_NUMBER) values (197,'Shaylynn','Female','1455 Rhode Island Avenue, Washington, Washington DC','USA','202-331-7137');
 Insert into HOLDER (H_ID,NAME,SEX,ADDRESS,NATIONALITY,PHONE_NUMBER) values (198,'Lorene','Female','3894 Colony Street, Wallingford, Connecticut','USA','203-269-7981');
 Insert into HOLDER (H_ID,NAME,SEX,ADDRESS,NATIONALITY,PHONE_NUMBER) values (199,'Ianna','Female','1999 Waldeck Street, Denton, Texas','USA','817-403-1183');
+Commit;
 
 INSERT INTO DNG_HOLDER VALUES (73, 93.94);
 INSERT INTO DNG_HOLDER VALUES (136, 92.97);
@@ -248,6 +250,7 @@ INSERT INTO DNG_HOLDER VALUES (146, 97.13);
 INSERT INTO DNG_HOLDER VALUES (62, 90.29);
 INSERT INTO DNG_HOLDER VALUES (80, 97.84);
 INSERT INTO DNG_HOLDER VALUES (105, 95.58);
+Commit;
 
 INSERT INTO ACCOUNT VALUES ('011954352501', 1184744, '7ea87c1a2d26f655fea9a5f3cd2ebf6811b28bf067acb2cee13001ce4f92563e', 65);
 INSERT INTO ACCOUNT VALUES ('052803119033', 1982331, '5081cabfcd7db1f9adc4589b5e36238d3730af1861a3db39c6211542175406e1', 43);
@@ -493,6 +496,7 @@ INSERT INTO ACCOUNT VALUES ('003357211782', 1312082, '30ce895530ba1cc0ef58f3c8b9
 INSERT INTO ACCOUNT VALUES ('003727453674', 513764, '808dea97392f4bb5be880422eaf42806068052662f3c4dd2761fa757cb7175fb', 60);
 INSERT INTO ACCOUNT VALUES ('011741867747', 594283, 'b7de679e6e7cf2c83fc7637cae90e0ffc9803e217b9be6353e7f65cebffbb752', 60);
 INSERT INTO ACCOUNT VALUES ('101444513481', 461576, 'f6a7c0ea00cac7d7877851acd11f53e1f6c006f5834132ae3d1c715d882b701b', 60);
+Commit;
 
 Insert into COUNTRY_CREDIT (NAME,COUNTRY_CODE,CREDIT,BANK_ID) values ('Afghanistan','AFG',45,10);
 Insert into COUNTRY_CREDIT (NAME,COUNTRY_CODE,CREDIT,BANK_ID) values ('Albania','ALB',59,6);
@@ -674,7 +678,7 @@ Insert into COUNTRY_CREDIT (NAME,COUNTRY_CODE,CREDIT,BANK_ID) values ('Vietnam',
 Insert into COUNTRY_CREDIT (NAME,COUNTRY_CODE,CREDIT,BANK_ID) values ('Yemen','YEM',9,24);
 Insert into COUNTRY_CREDIT (NAME,COUNTRY_CODE,CREDIT,BANK_ID) values ('Zambia','ZMB',23,20);
 Insert into COUNTRY_CREDIT (NAME,COUNTRY_CODE,CREDIT,BANK_ID) values ('Zimbabwe','ZWE',50,18);
-
+Commit;
 
 Insert into DNG_PERS (DNG_ID,NAME,REASON,BANK_ID) values (1,'Vladimir Putin','The culprits of the war between Ukraine and Russia',8);
 Insert into DNG_PERS (DNG_ID,NAME,REASON,BANK_ID) values (2,'Kim Jong-un','The ruler of North Korea',8);
@@ -776,6 +780,7 @@ Insert into DNG_PERS (DNG_ID,NAME,REASON,BANK_ID) values (97,'Heo Mun-Hee','A pe
 Insert into DNG_PERS (DNG_ID,NAME,REASON,BANK_ID) values (98,'Seol Dae-Jung','A person of Bad Credit',24);
 Insert into DNG_PERS (DNG_ID,NAME,REASON,BANK_ID) values (99,'Baek Sang-Ook','A person of Bad Credit',25);
 Insert into DNG_PERS (DNG_ID,NAME,REASON,BANK_ID) values (100,'Jegal Hyun-Shik','A person of Bad Credit',22);
+Commit;
 
 Insert into DNG_ACCT (ACCT_NO,REASON,BANK_ID) values ('003114088385','Account number that appears to have been stolen',11);
 Insert into DNG_ACCT (ACCT_NO,REASON,BANK_ID) values ('003196301503','Account number that appears to have been stolen',0);
@@ -877,6 +882,7 @@ Insert into DNG_ACCT (ACCT_NO,REASON,BANK_ID) values ('101407042223','Account nu
 Insert into DNG_ACCT (ACCT_NO,REASON,BANK_ID) values ('101327300111','Account number that appears to have been stolen',17);
 Insert into DNG_ACCT (ACCT_NO,REASON,BANK_ID) values ('101769567239','Account number that appears to have been stolen',24);
 Insert into DNG_ACCT (ACCT_NO,REASON,BANK_ID) values ('101361349766','Account number that appears to have been stolen',18);
+Commit;
 
 /*TRANSACTION TABLE*/
 INSERT INTO TRANSACTION  VALUES (1 , TO_DATE('2019-03-05', 'yyyy-mm-dd') , 'mobile' , 0, 1049618, 'Manute Bol' , 'ANT' , '052969246076' , '011954352501');
@@ -949,6 +955,7 @@ INSERT INTO TRANSACTION  VALUES (67 , TO_DATE('2022-10-22', 'yyyy-mm-dd') , 'onl
 INSERT INTO TRANSACTION  VALUES (68 , TO_DATE('2022-10-23', 'yyyy-mm-dd') , 'online' , 0, 91812, 'Hyun-Shik Jegal' , 'KOR' , '052640763573' , '101263416078');
 INSERT INTO TRANSACTION  VALUES (69 , TO_DATE('2022-10-24', 'yyyy-mm-dd') , 'teller' , 0, 27004, 'Kyu-Bong Sim' , 'KOR' , '052537351603' , '003164934976');
 INSERT INTO TRANSACTION  VALUES (70 , TO_DATE('2022-10-25', 'yyyy-mm-dd') , 'mobile' , 0, 58382, 'Tae gyu Kim' , 'KOR' , '052838715781' , '003509484705');
+Commit;
 
 /*DNG_TXN TABLE*/
 INSERT INTO DNG_TXN  VALUES (1 , 500, 'transfer too much money.' , '0');
@@ -1004,6 +1011,7 @@ INSERT INTO DNG_TXN  VALUES (67 , 881, 'Suspicious account.' , '0');
 INSERT INTO DNG_TXN  VALUES (68 , 432, 'Suspicious account.' , '1');
 INSERT INTO DNG_TXN  VALUES (69 , 514, 'Suspicious account.' , '1');
 INSERT INTO DNG_TXN  VALUES (70 , 799, 'Suspicious account.' , '1');
+Commit;
 
 Insert into INITIATION (TXN_ID,BANK_ID,H_ID) values (1,6,'65');
 Insert into INITIATION (TXN_ID,BANK_ID,H_ID) values (2,7,'43');
@@ -1075,4 +1083,4 @@ Insert into INITIATION (TXN_ID,BANK_ID,H_ID) values (67,16,'8');
 Insert into INITIATION (TXN_ID,BANK_ID,H_ID) values (68,15,'99');
 Insert into INITIATION (TXN_ID,BANK_ID,H_ID) values (69,7,'196');
 Insert into INITIATION (TXN_ID,BANK_ID,H_ID) values (70,9,'125');
-
+Commit;
