@@ -1,4 +1,40 @@
-SQL 동작 환경:
+실행 방법:
+Team8-Phase3.zip의 압축을 풀고 프로젝트 전체를 eclipse 상에서 프로젝트 열기를 합니다.
+JDBC.java를 eclipse 상에서 실행합니다.
+
+실행 주의 사항:
+기존 Phase 2의 Team8-Phase-2-1.sql와 Team8-Phase-2-2.sql에 대해 데이터가 DB상에 추가되어있어야합니다.
+JDBC.java를 실행하기전에 eclipse 상에서 ojdbc8.jar를 라이브러리로 추가해 드라이버를 불러와야합니다.
+DB가 가동되어있는 상태에서 JDBC.java를 실행하여야합니다.
+
+JDBC.java 파일안에 아래 내용을 실행하는 환경에 맞게 바꿔주어야 합니다.
+
+public static final String URL = "jdbc:oracle:thin:@localhost:1521:orcl"; // orcl 또는 xe
+public static final String USER_DB8 = "db8"; // DB 유저명
+public static final String USER_PASSWD = "db8"; // DB 패스워드명
+
+
+기능 설명:
+고객 또는 은행 두 가지 Role 중 하나를 선택합니다.
+고객을 선택한 경우 고객에 접근 권한이 주어지는 기능들을 선택할 수 있으며 '거래 하기' 기능과, '개인정보 변경하기' 기능이 있습니다.
+은행을 선택한 경우 고객은 접근 할 수 없고, 은행만이 접근 할 수 있는 기능들을 선택할 수 있습니다.
+기능들은 다음과 같습니다.
+1: 거래방법별로 거래보기
+2: 특정 거래금액 이상인 거래 ID 찾기
+3: 특정 신용도 이상 국가의 은행 정보 보기 
+4: 국가 신용 점수 수정하기
+5: 특정 고객의 계좌 삭제하기
+6: 특정 국가 신용도보다 낮은 국가 조회
+7: 위험 계좌주 신상정보 조회,
+8: 국가별 계좌주 평균 자산 조회
+9: 기준 위험 점수보다 높은 거래 조회 
+10: 위험인물 거래 조회
+11: 위험계좌 거래 조회
+12: 위험 거래 심사 상태 변경
+13: 서비스 종료하기
+
+Application 제작 환경:
+IntelliJ 버전: 2022.2.3 빌드: 222.4345.14
 Arm64 MacBook 21.6.0 Darwin Kernel Version 21.6.0
 colima version 0.4.6
 Docker version 20.10.17
@@ -6,105 +42,3 @@ gvenzl/oracle-xe
 Oracle Database 21c Express Edition Release 21.0.0.0.0 - Production
 Version 21.3.0.0.0
 ORACLE SQL Developer 22.2.1
-
-
-실행 방법:
-Team8-Phase2-1.sql (DDL), Team8-Phase2-2.sql (INSERT문)
-두 개의 파일을 SQL Developer에서 각각 열어 순차적으로 스크립트를 실행합니다.
-Team8-Phase2-3.sql (QUERY문)을 이용하여 쿼리 결과를 조회합니다.
-
-
-실행 주의 사항:
-DNG_TXN 테이블에 INSERT를 진행하기전
-반드시 SET DEFINE OFF; 문장을 먼저 실행하여야 합니다.
-(데이터 내 &기호를 변수가 아닌 데이터로 사용하기 위함)
-
-추가될 사항:
-TRANSACTION에 데이터가 들어올 때, 데이터 검사 후 위험거래임이 판별되면 DNG_TXN에 삽입되도록 TRIGGER를 구성하였습니다.
-버그 수정이 필요해 아직 반영은 안되었지만 참고하시면 좋겠습니다.
-/* TXN_ALERT TRIGGER-----------------------
-
-SET DEFINE OFF;
-CREATE OR REPLACE TRIGGER TXN_ALERT
-AFTER INSERT ON TRANSACTION
-FOR EACH ROW
---WHEN(NEW.AMOUNT > 1000000 OR NEW.ACCOUNT_NUMBER OR NEW.CNTR_NAME IN DNG_PERS.NAME)
-DECLARE NAME_ALERT VARCHAR2(50);
-ACCOUNT_ALERT VARCHAR2(20);
-SCORE NUMBER(3);
-REASON VARCHAR2(50);
-STATUS CHAR(1);
-
-BEGIN
--- create dual table for name_alert, account_alert
-SELECT(SELECT CNTR_NAME FROM TRANSACTION WHERE EXISTS(SELECT CNTR_NAME FROM TRANSACTION, DNG_PERS WHERE CNTR_NAME = NAME))
-INTO NAME_ALERT FROM DUAL;
-
-SELECT(SELECT ACCOUNT_NUMBER FROM TRANSACTION WHERE EXISTS(SELECT ACCOUNT_NUMBER FROM TRANSACTION T, DNG_ACCT D WHERE T.ACCOUNT_NUMBER = D.ACCT_NO))
-INTO ACCOUNT_ALERT FROM DUAL;
-
-STATUS := '0'; --judging...
-
--- insert into dng_txn
-IF(:NEW.AMOUNT>1000000 AND (NAME_ALERT IS NOT NULL) AND (ACCOUNT_ALERT IS NOT NULL)) THEN
-REASON := 'Suspicious person & account & transfer too much money.';
-SCORE := 999;
-INSERT INTO DNG_TXN (TXN_ID, SCORE, REASON, STATUS) VALUES
-(:NEW.TXN_ID, SCORE, REASON, STATUS);
-dbms_output.put_line('New Alert of Transaction occured.: '||:New.TXN_ID);
-dbms_output.put_line('REASON: '||REASON);
-
-ELSIF(:NEW.AMOUNT>1000000 AND (NAME_ALERT IS NOT NULL)) THEN
-REASON := 'Suspicious person & transfer too much money.';
-SCORE := 750;
-INSERT INTO DNG_TXN (TXN_ID, SCORE, REASON, STATUS) VALUES
-(:NEW.TXN_ID, SCORE, REASON, STATUS);
-dbms_output.put_line('New Alert of Transaction occured.: '||:New.TXN_ID);
-dbms_output.put_line('REASON: '||REASON);
-
-ELSIF(:NEW.AMOUNT>1000000 AND (ACCOUNT_ALERT IS NOT NULL)) THEN
-REASON := 'Suspicious account & transfer too much money.';
-SCORE := 750;
-INSERT INTO DNG_TXN (TXN_ID, SCORE, REASON, STATUS) VALUES
-(:NEW.TXN_ID, SCORE, REASON, STATUS);
-dbms_output.put_line('New Alert of Transaction occured.: '||:New.TXN_ID);
-dbms_output.put_line('REASON: '||REASON);
-
-ELSIF(NAME_ALERT AND ACCOUNT_ALERT) THEN
-REASON := 'Suspicious person & account.';
-SCORE := 800;
-INSERT INTO DNG_TXN (TXN_ID, SCORE, REASON, STATUS) VALUES
-(:NEW.TXN_ID, SCORE, REASON, STATUS);
-dbms_output.put_line('New Alert of Transaction occured.: '||:New.TXN_ID);
-dbms_output.put_line('REASON: '||REASON);
-
-ELSIF(NAME_ALERT IS NOT NULL) THEN
-REASON := 'Suspicious person.';
-SCORE := 600;
-INSERT INTO DNG_TXN (TXN_ID, SCORE, REASON, STATUS) VALUES
-(:NEW.TXN_ID, SCORE, REASON, STATUS);
-dbms_output.put_line('New Alert of Transaction occured.: '||:New.TXN_ID);
-dbms_output.put_line('REASON: '||REASON);
-
-ELSIF(ACCOUNT_ALERT IS NOT NULL) THEN
-REASON := 'Suspicious account.';
-SCORE := 600;
-INSERT INTO DNG_TXN (TXN_ID, SCORE, REASON, STATUS) VALUES
-(:NEW.TXN_ID, SCORE, REASON, STATUS);
-dbms_output.put_line('New Alert of Transaction occured.: '||:New.TXN_ID);
-dbms_output.put_line('REASON: '||REASON);
-
-ELSIF(:NEW.AMOUNT>1000000) THEN
-REASON := 'transfer too much money.';
-SCORE := 500;
-INSERT INTO DNG_TXN (TXN_ID, SCORE, REASON, STATUS) VALUES
-(:NEW.TXN_ID, SCORE, REASON, STATUS);
-dbms_output.put_line('New Alert of Transaction occured.: '||:New.TXN_ID);
-dbms_output.put_line('REASON: '||REASON);
-
-ELSE dbms_output.put_line('Transaction successd.');
-END IF;
-
-END TXN_ALERT;
-
--------------------*/
