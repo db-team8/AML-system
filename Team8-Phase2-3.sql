@@ -98,14 +98,14 @@ FROM HOLDER H
 WHERE EXISTS (SELECT * FROM DNG_HOLDER D WHERE H.H_ID=D.H_ID);
 
 -- TYPE 6
--- 고객 id가 12번인 고객이 거래한 상대 국가 중에 거래를 진행한 고객의 이름 조회
-SELECT H.NAME FROM INITIATION I JOIN HOLDER H on I.H_ID = H.H_ID JOIN TRANSACTION T ON I.TXN_ID=T.TXN_ID
+-- 고객 id가 12번(아마 위험인물일 가능성이 높은 고객)인 고객이 거래한 사람들의 국가들을 상대로, 한 번이라도 거래를 한 적이 있는 고객들의 이름 조회
+SELECT DISTINCT H.NAME FROM INITIATION I JOIN HOLDER H on I.H_ID = H.H_ID JOIN TRANSACTION T ON I.TXN_ID=T.TXN_ID
 WHERE T.CNTR_CTRY IN (select DISTINCT T.CNTR_CTRY
 FROM INITIATION I JOIN HOLDER H ON I.H_ID = H.H_ID JOIN TRANSACTION T on I.TXN_ID = T.TXN_ID
 WHERE H.H_ID=12);
 
 -- TYPE 7
--- 두 개이상의 계좌를 갖고있는 고객중 국가가 'GTM'인 상대와 거래한 적이 있는 고객의 이름, 거래 날짜, 거래 방식, 거래 금액을 조회
+-- 두 개이상의 계좌를 갖고있는 고객들중 국가코드가 'GTM'인 상대와 거래한 적이 있는 고객의 이름, 거래 날짜, 거래 방식, 거래 금액을 조회
 WITH TEMP_H AS (SELECT A.H_ID
 FROM ACCOUNT A
 GROUP BY A.H_ID
