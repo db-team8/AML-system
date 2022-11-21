@@ -643,7 +643,7 @@ public class JDBC {
                     rs.close();
                     ps.close();
                     break;
-                case 15: // TYPE 7
+                case 15: // DY - TYPE 7
                     scan = new Scanner(System.in);
                     System.out.println("몇 개의 계좌를 갖고 있는 고객에 대해 조회하시겠습니까?: ");
                     int accCnt = Integer.parseInt(scan.nextLine());
