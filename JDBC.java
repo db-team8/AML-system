@@ -66,47 +66,26 @@ public class JDBC {
          * ------------------- SERVICE -------------------
          */
 
-        final int CUSTOMER = 1;
-        final int BANK = 2;
         int select;
         boolean repeat = true;
-
-        System.out.println("Role을 선택하세요.");
-        System.out.println("1: 고객, 2: 은행");
         Scanner input = new Scanner(System.in);
 
-        int role = input.nextInt();
-        System.out.println(role);
-
-        if (role == CUSTOMER) {
+        while(repeat) {
             System.out.println("원하는 서비스를 선택하세요.");
-            System.out.println("1: 거래 하기(insert), 2: 개인정보 변경하기(update)");
+            System.out.println("1: 거래방법별로 거래보기  2.특정 거래금액 이상인 거래 ID 찾기 3: 특정 신용도 이상 국가의 은행 정보 보기 ");
+            System.out.println("4: 국가 신용 점수 수정하기 5: 특정 고객의 계좌 삭제하기, 6: 특정 국가 신용도보다 낮은 국가 조회 ");
+            System.out.println("7: 위험 계좌주 신상정보 조회, 8: 국가별 계좌주 평균 자산 조회, 9: 기준 위험 점수보다 높은 거래 조회 " );
+            System.out.println("10: 위험인물 거래 조회, 11: 위험계좌 거래 조회, 12: 위험 거래 심사 상태 변경 " );
+            System.out.println("13: 기간별 개인정보를 제외한 거래 정보 조회, 14: 특정 금액 이상 거래한 고객 정보 조회" );
+            System.out.println("15: 다수의 계좌를 갖고 있는 고객이 특정 국가와 거래한 거래 정보 조회, 16: 고객 정보 추가 및 계좌 생성" );
+            System.out.println("17: 서비스 종료하기 " );
             select = input.nextInt();
-            // 1: 필요한 데이터 넣어서 transaction table에 insert
-            // 2: 원래값을, 바꾸고싶은 값 받기 --> update
 
-            doCustomerQueries(conn, stmt, select);
+            if (select == 17)
+                repeat = false;
 
-        } else if (role == BANK) {
-            while(repeat) {
-                System.out.println("원하는 서비스를 선택하세요.");
-                System.out.println("1: 거래방법별로 거래보기  2.특정 거래금액 이상인 거래 ID 찾기 3: 특정 신용도 이상 국가의 은행 정보 보기 ");
-                System.out.println("4: 국가 신용 점수 수정하기 5: 특정 고객의 계좌 삭제하기, 6: 특정 국가 신용도보다 낮은 국가 조회 ");
-                System.out.println("7: 위험 계좌주 신상정보 조회, 8: 국가별 계좌주 평균 자산 조회, 9: 기준 위험 점수보다 높은 거래 조회 " );
-                System.out.println("10: 위험인물 거래 조회, 11: 위험계좌 거래 조회, 12: 위험 거래 심사 상태 변경 " );
-                System.out.println("13: 기간별 개인정보를 제외한 거래 정보 조회, 14: 특정 금액 이상 거래한 고객 정보 조회" );
-                System.out.println("15: 다수의 계좌를 갖고 있는 고객이 특정 국가와 거래한 거래 정보 조회, 16: 고객 정보 추가 및 계좌 생성" );
-                System.out.println("17: 서비스 종료하기 " );
-                select = input.nextInt();
-
-                if (select == 17)
-                    repeat = false;
-
-                doBankQueries(conn, stmt, select);
-            }
-
-        } else
-            System.out.println("프로그램을 다시 실행한 후, 1,2 중에서 선택해주세요");
+            doBankQueries(conn, stmt, select);
+        }
 
         /*------------------------------
          * 		DB disconnect
