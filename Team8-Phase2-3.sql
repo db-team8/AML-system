@@ -65,13 +65,13 @@ UPDATE DNG_TXN SET STATUS = ? WHERE TXN_ID = 1
 
 -- DY
 
--- TYPE 1
+-- TYPE 1 (used for phase3)
 -- 2022년 9월 한 달동안 발생한 거래의 거래 날짜, 거래 금액, 상대방 국가 조회
 SELECT T.TXN_DATE, T.AMOUNT, CNTR_CTRY
 FROM TRANSACTION T
 WHERE T.TXN_DATE BETWEEN TO_DATE('2022-09-01', 'yyyy-mm-dd') AND TO_DATE('2022-09-30', 'yyyy-mm-dd');
 
--- TYPE 2
+-- TYPE 2 (used for phase3)
 -- 90000 이상을 거래한 (입금, 출금 모두에 대해) 고객의 id, 이름, 거래 날짜, 거래 금액 조회
 SELECT H.H_ID, H.Name, T.TXN_DATE, T.AMOUNT
 FROM INITIATION I, HOLDER H, TRANSACTION T
@@ -104,7 +104,7 @@ WHERE T.CNTR_CTRY IN (select DISTINCT T.CNTR_CTRY
 FROM INITIATION I JOIN HOLDER H ON I.H_ID = H.H_ID JOIN TRANSACTION T on I.TXN_ID = T.TXN_ID
 WHERE H.H_ID=12);
 
--- TYPE 7
+-- TYPE 7 (used for phase3)
 -- 두 개이상의 계좌를 갖고있는 고객들중 국가코드가 'GTM'인 상대와 거래한 적이 있는 고객의 이름, 거래 날짜, 거래 방식, 거래 금액을 조회
 WITH TEMP_H AS (SELECT A.H_ID
 FROM ACCOUNT A

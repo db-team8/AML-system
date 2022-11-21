@@ -7,6 +7,27 @@ import java.sql.*;
 import java.sql.Date;
 import java.util.*;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+class SHA256 {
+
+    public static String encrypt(String text) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        md.update(text.getBytes());
+
+        return bytesToHex(md.digest());
+    }
+
+    private static String bytesToHex(byte[] bytes) {
+        StringBuilder builder = new StringBuilder();
+        for (byte b : bytes) {
+            builder.append(String.format("%02x", b));
+        }
+        return builder.toString();
+    }
+
+}
 
 public class JDBC {
     /*
@@ -73,11 +94,12 @@ public class JDBC {
                 System.out.println("4: 국가 신용 점수 수정하기 5: 특정 고객의 계좌 삭제하기, 6: 특정 국가 신용도보다 낮은 국가 조회 ");
                 System.out.println("7: 위험 계좌주 신상정보 조회, 8: 국가별 계좌주 평균 자산 조회, 9: 기준 위험 점수보다 높은 거래 조회 " );
                 System.out.println("10: 위험인물 거래 조회, 11: 위험계좌 거래 조회, 12: 위험 거래 심사 상태 변경 " );
-                System.out.println("13: 서비스 종료하기 " );
-
+                System.out.println("13: 기간별 개인정보를 제외한 거래 정보 조회, 14: 특정 금액 이상 거래한 고객 정보 조회" );
+                System.out.println("15: 다수의 계좌를 갖고 있는 고객이 특정 국가와 거래한 거래 정보 조회, 16: 고객 정보 추가 및 계좌 생성" );
+                System.out.println("17: 서비스 종료하기 " );
                 select = input.nextInt();
 
-                if (select == 13)
+                if (select == 17)
                     repeat = false;
 
                 doBankQueries(conn, stmt, select);
@@ -586,10 +608,177 @@ public class JDBC {
                     conn.commit();
                     System.out.println();
                     break;
-            }
+                case 13: // DY - TYPE1
+                    Scanner scan = new Scanner(System.in);
+                    System.out.println("시작 날짜를 yyyy-mm-dd 형태로 입력해주세요: ");
+                    String startDate = scan.nextLine();
 
-            switch(select) {
-                case 1: case 2: case 3: case 4: rs.close();
+                    System.out.println("끝 날짜를 yyyy-mm-dd 형태로 입력해주세요: ");
+                    String endDate = scan.nextLine();
+
+                    sql = "SELECT T.TXN_DATE, T.AMOUNT, CNTR_CTRY FROM TRANSACTION T " +
+                            "WHERE T.TXN_DATE BETWEEN ? AND ?";
+
+                    ps = conn.prepareStatement(sql);
+                    ps.setDate(1, Date.valueOf(startDate));
+                    ps.setDate(2, Date.valueOf(endDate));
+
+                    rs = ps.executeQuery();
+
+                    while (rs.next()) {
+                        Date transDate = rs.getDate(1);
+                        int transAmount = rs.getInt(2);
+                        String counterCountry = rs.getString(3);
+
+                        String s = "거래 날짜: %s, 거래 금액: %d, 거래 상대 국가: %s";
+                        System.out.println(String.format(s, transDate.toString(), transAmount, counterCountry));
+                    }
+
+                    rs.close();
+                    ps.close();
+                    break;
+                case 14: // DY - TYPE2
+                    scan = new Scanner(System.in);
+                    System.out.println("거래 금익을 입력하세요: ");
+                    int amnt = Integer.parseInt(scan.nextLine());
+
+                    sql = "SELECT H.H_ID, H.Name, T.TXN_DATE, T.AMOUNT " +
+                            "FROM INITIATION I, HOLDER H, TRANSACTION T " +
+                            "WHERE I.H_ID=H.H_id AND I.TXN_ID=T.TXN_ID AND T.AMOUNT >= ?";
+
+                    ps = conn.prepareStatement(sql);
+                    ps.setInt(1, amnt);
+
+                    rs = ps.executeQuery();
+
+                    while (rs.next()) {
+                        int holderID = rs.getInt(1);
+                        String holderName = rs.getString(2);
+                        Date transDate = rs.getDate(3);
+                        int transAmount = rs.getInt(4);
+
+                        String s = "고객 ID: %d, 고객 이름: %s, 거래 날짜: %s, 거래 금액: %d";
+                        System.out.println(String.format(s, holderID, holderName, transDate.toString(), transAmount));
+                    }
+
+                    rs.close();
+                    ps.close();
+                    break;
+                case 15: // TYPE 7
+                    scan = new Scanner(System.in);
+                    System.out.println("몇 개의 계좌를 갖고 있는 고객에 대해 조회하시겠습니까?: ");
+                    int accCnt = Integer.parseInt(scan.nextLine());
+
+                    System.out.println("거래 상대의 국가를 입력해주세요: ");
+                    String countryCode = scan.nextLine();
+                    sql = "WITH TEMP_H AS (" +
+                            "SELECT A.H_ID FROM ACCOUNT A GROUP BY A.H_ID HAVING COUNT(*) >= ? ) " +
+                            "SELECT H.Name, T.TXN_DATE, T.METHOD, T.AMOUNT FROM INITIATION I" +
+                            " JOIN TEMP_H TH ON I.H_ID=TH.H_ID JOIN TRANSACTION T ON I.TXN_ID = T.TXN_ID " +
+                            "JOIN HOLDER H ON H.H_id=TH.H_ID " +
+                            "WHERE T.CNTR_CTRY = ?";
+
+                    ps = conn.prepareStatement(sql);
+                    ps.setInt(1, accCnt);
+                    ps.setString(2, countryCode);
+
+                    rs = ps.executeQuery();
+
+                    while (rs.next()) {
+                        String holderName = rs.getString(1);
+                        Date transDate = rs.getDate(2);
+                        String transMethod = rs.getString(3);
+                        int transAmnt = rs.getInt(4);
+
+                        String s = "고객 이름: %s, 거래 날짜: %s, 거래 방식: %s, 거래 긂액: %d";
+                        System.out.println(String.format(s, holderName, transDate, transMethod, transAmnt));
+                    }
+
+                    rs.close();
+                    ps.close();
+                    break;
+                case 16:
+                    scan = new Scanner(System.in);
+                    System.out.println("고객의 이름을 입력해주세요: ");
+                    String cName = scan.nextLine();
+
+                    String cGender;
+                    do {
+                        System.out.println("고객의 성별을 선택해주세요: 1. 남, 2. 여");
+                        cGender = scan.nextLine();
+                    } while (!cGender.equals("1") && !cGender.equals("2"));
+                    if (cGender.equals("1")) {
+                        cGender = "Male";
+                    } else {
+                        cGender = "Female";
+                    }
+
+                    System.out.println("고객의 주소를 입력해주세요: ");
+                    String cAddress = scan.nextLine();
+
+                    System.out.println("고객의 국적의 국가 코드를 입력해주세요: ");
+                    String cNationality = scan.nextLine();
+
+                    String cPhoneNum;
+                    String phoneNumRegex = "[0-9]{3}-[0-9]{3}-[0-9]{4}";
+                    do {
+                        System.out.println("고객의 연락처를 XXX-XXX-XXXX 형태로 입력해주세요:  ");
+                        cPhoneNum = scan.nextLine();
+                    } while (!cPhoneNum.matches(phoneNumRegex));
+
+                    System.out.println("생성할 고객 계좌의 비밀번호를 설정해주세요: ");
+                    String cPaasword = scan.nextLine();
+
+//                    고객 정보 생성
+                    sql = "Insert into HOLDER (H_ID, NAME, SEX, ADDRESS, NATIONALITY, PHONE_NUMBER) " +
+                            "values ((select max(H_ID)+1 from HOLDER), ?, ?, ?, ?, ?)";
+
+                    ps = conn.prepareStatement(sql);
+                    ps.setString(1, cName);
+                    ps.setString(2, cGender);
+                    ps.setString(3, cAddress);
+                    ps.setString(4, cNationality);
+                    ps.setString(5, cPhoneNum);
+
+                    int res1 = ps.executeUpdate();
+
+//                    고객 계좌 생성
+                    Random random = new Random();
+                    String[] accntPrefixes = {"011", "052", "057", "101"};
+                    String cAccntNum = accntPrefixes[random.nextInt(accntPrefixes.length)];
+
+                    for (int i=0; i<9; i++) {
+                        int n = random.nextInt(10);
+                        cAccntNum += n + "";
+                    }
+                    String encryptedPassword = "";
+
+                    try {
+                        encryptedPassword = SHA256.encrypt(cPaasword);
+                    } catch (NoSuchAlgorithmException e) {
+                        System.out.println("error digesting password.");
+                        System.exit(1);
+                    }
+
+                    sql = "INSERT INTO ACCOUNT VALUES (?, ?, ?, (select max(H_ID) from HOLDER))";
+
+                    ps = conn.prepareStatement(sql);
+                    ps.setString(1, cAccntNum);
+                    ps.setInt(2, 0);
+                    ps.setString(3, encryptedPassword);
+
+                    int res2 = ps.executeUpdate();
+
+                    if (res1 == 1 && res2 == 1) {
+                        conn.commit();
+                        System.out.println("성공적으로 고객 정보와 계좌를 생성하였습니다.");
+                    } else {
+                        System.out.println("고객 정보와 계좌 생성에 실패하였습니다.");
+                    }
+
+                    ps.close();
+                    break;
+                case 17:
                     break;
             }
         } catch (SQLException e) {
